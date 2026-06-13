@@ -7,6 +7,8 @@ Checks:
 - SPF
 - DKIM
 - DMARC
+- MTA-STS
+- TLS-RPT
 
 ## Installation
 
@@ -20,9 +22,9 @@ pip install -r requirements.txt
 ## Usage
 
 ```bash
-python audit.py
+python3 audit.py
 ```
 
 ## Contributing
 
-Feel free to contribute by opening the PR
+Feel free to contribute by opening a PR
