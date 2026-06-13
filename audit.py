@@ -1,60 +1,16 @@
-import dns.resolver
+from checks import check_spf, check_dkim, check_dmarc
 
-def get_txt_records(name):
-    try:
-        answers = dns.resolver.resolve(name, "TXT")
-        return [
-            "".join(
-                part.decode() if isinstance(part, bytes) else part
-                for part in record.strings
-            )
-            for record in answers
-        ]
-    except Exception:
-        return []
-
-def check_spf(domain):
-    records = get_txt_records(domain)
-
-    for record in records:
-        if record.startswith("v=spf1"):
-            return True, record
-
-    return False, None
-
-def check_dmarc(domain):
-    records = get_txt_records(f"_dmarc.{domain}")
-
-    for record in records:
-        if record.startswith("v=DMARC1"):
-            return True, record
-
-    return False, None
-
-def check_dkim(domain, selector):
-    if not selector:
-        return None, None
-
-    records = get_txt_records(f"{selector}._domainkey.{domain}")
-
-    for record in records:
-        if "v=DKIM1" in record:
-            return True, record
-
-    return False, None
 
 def print_result(name, status):
     print(f"{name:<10} {'PASS' if status else 'FAIL'}")
+
 
 def main():
     print("Email Audit")
     print("=" * 40)
 
     domain = input("Domain: ").strip()
-
-    selector = input(
-        "DKIM selector (leave blank to skip DKIM): "
-    ).strip()
+    selector = input("DKIM selector (leave blank to skip DKIM): ").strip()
 
     print()
 
@@ -83,24 +39,15 @@ def main():
     print("Details")
     print("-" * 40)
 
-    if spf_record:
-        print(f"SPF:   {spf_record}")
-    else:
-        print("SPF:   Not found")
-
+    print(f"SPF:   {spf_record}" if spf_record else "SPF:   Not found")
     print()
 
     if selector:
-        if dkim_record:
-            print(f"DKIM:  {dkim_record}")
-        else:
-            print("DKIM:  Not found")
+        print(f"DKIM:  {dkim_record}" if dkim_record else "DKIM:  Not found")
         print()
 
-    if dmarc_record:
-        print(f"DMARC: {dmarc_record}")
-    else:
-        print("DMARC: Not found")
+    print(f"DMARC: {dmarc_record}" if dmarc_record else "DMARC: Not found")
+
 
 if __name__ == "__main__":
     main()
