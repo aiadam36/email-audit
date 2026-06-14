@@ -4,11 +4,13 @@ Simple email authentication auditor.
 
 Checks:
 
+- MX
 - SPF
 - DKIM
 - DMARC
 - MTA-STS
 - TLS-RPT
+- DNSSEC
 
 ## Installation
 
